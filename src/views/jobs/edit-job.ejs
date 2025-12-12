@@ -3,7 +3,8 @@
 
 <h1>Modifier un job</h1>
 
-<form action="/jobs/edit-job/<%= job.job_id %>" method="POST">
+<form action="/jobs/update/<%= job.job_id %>" method="POST">
+
 
   <label>Titre :</label><br>
   <input type="text" name="titre" value="<%= job.titre %>"><br><br>

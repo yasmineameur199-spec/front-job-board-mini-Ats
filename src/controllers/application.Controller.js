@@ -1,96 +1,153 @@
 import Application from "../models/application.model.js";
 import User from "../models/user.model.js";
 import Job from "../models/job.model.js";
-import { getPaginationParams } from "../utils/pagination.js";
 
 export const ApplicationController = {
 
-  async create(req, res) {
+  // =======================
+  // LISTE
+  // =======================
+  async renderApplicationList(req, res) {
     try {
-      const app = await Application.create(req.body);
-      return res.status(201).json(app);
-    } catch (err) {
-      return res.status(400).json({ error: err.message });
-    }
-  },
-
-  async findAll(req, res) {
-    try {
-      const { page, limit, offset } = getPaginationParams(req, 10, 50);
-
-      const where = {};
-
-      if (req.query.id_user) where.user_id = req.query.id_user;
-      if (req.query.id_job) where.id_job = req.query.id_job;
-      if (req.query.status) where.status = req.query.status;
-
-      const { rows, count } = await Application.findAndCountAll({
-        where,
+      const applications = await Application.findAll({
         include: [User, Job],
-        limit,
-        offset,
-        order: [["application_id", "DESC"]],   // ✔ correction importante
+        order: [["application_id", "DESC"]],
       });
 
-      return res.json({
-        data: rows,
-        pagination: {
-          total: count,
-          page,
-          limit,
-          pageCount: Math.ceil(count / limit),
-        },
+      res.render("applications/list-application", {
+        title: "Liste des candidatures",
+        applications,
+        query: req.query
       });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      res.status(500).send(err.message);
     }
   },
 
-  async findOne(req, res) {
+  // =======================
+  // FORM AJOUT
+  // =======================
+  async renderAddForm(req, res) {
+  try {
+    const users = await User.findAll({
+      order: [["user_id", "ASC"]],
+    });
+
+    const jobs = await Job.findAll({
+      order: [["job_id", "ASC"]],
+    });
+
+    res.render("applications/add-application", {
+      title: "Nouvelle candidature",
+      users,
+      jobs,
+      query: req.query
+    });
+
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+},
+
+  // =======================
+  // FORM EDIT
+  // =======================
+  async renderEditForm(req, res) {
     try {
-      const app = await Application.findByPk(req.params.id, {
-        include: [User, Job]
+      const application = await Application.findByPk(
+        req.params.application_id,
+        { include: [User, Job] }
+      );
+
+      if (!application) {
+        return res.status(404).send("Candidature introuvable");
+      }
+
+      res.render("applications/edit-application", {
+        title: "Modifier la candidature",
+        application
       });
-
-      if (!app) return res.status(404).json({ error: "Application not found" });
-
-      return res.json(app);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      res.status(500).send(err.message);
     }
   },
 
+  // =======================
+  // CREATE (UPLOAD)
+  // =======================
+  async create(req, res) {
+  try {
+    console.log("BODY:", req.body);
+    console.log("FILES:", req.files);
+
+    const data = req.body;
+
+    if (req.files?.resume) {
+      data.resume = req.files.resume[0].filename;
+    }
+
+    if (req.files?.cover_letter) {
+      data.cover_letter = req.files.cover_letter[0].filename;
+    }
+
+    const app = await Application.create(data);
+
+    console.log("APPLICATION CREATED:", app.toJSON());
+
+    return res.redirect("/applications/list?success=Candidature envoyée");
+
+  } catch (err) {
+    console.error("CREATE APPLICATION ERROR:", err);
+    return res.status(500).send(err.message);
+  }
+},
+
+  // =======================
+  // UPDATE
+  // =======================
   async update(req, res) {
     try {
-      const [count] = await Application.update(req.body, {
-        where: { application_id: req.params.id } // ✔ correction
-      });
+      const data = req.body;
 
-      if (count === 0) {
-        return res.status(404).json({ error: "Application not found" });
+      if (req.files?.resume) {
+        data.resume = req.files.resume[0].filename;
+      } else {
+        delete data.resume;
       }
 
-      return res.json({ message: "Application updated" });
+      if (req.files?.cover_letter) {
+        data.cover_letter = req.files.cover_letter[0].filename;
+      } else {
+        delete data.cover_letter;
+      }
 
+      await Application.update(data, {
+        where: { application_id: req.params.application_id }
+      });
+
+      return res.redirect("/applications/list?success=Candidature modifiée");
     } catch (err) {
-      return res.status(400).json({ error: err.message });
+      return res.redirect(
+        "/applications/list?error=" + encodeURIComponent(err.message)
+      );
     }
   },
 
+  // =======================
+  // DELETE
+  // =======================
   async delete(req, res) {
     try {
-      const count = await Application.destroy({
-        where: { application_id: req.params.id }
+      await Application.destroy({
+        where: { application_id: req.params.application_id }
       });
 
-      if (count === 0) {
-        return res.status(404).json({ error: "Application not found" });
-      }
-
-      return res.json({ message: "Application deleted" });
-
+      return res.redirect("/applications/list?success=Candidature supprimée");
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return res.redirect(
+        "/applications/list?error=" + encodeURIComponent(err.message)
+      );
     }
   }
+
 };
