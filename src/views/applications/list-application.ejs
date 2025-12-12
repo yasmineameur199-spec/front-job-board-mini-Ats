@@ -1,0 +1,164 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: #f4f4f4;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .success {
+      color: green;
+      margin: 10px 0;
+    }
+
+    .error {
+      color: red;
+      margin: 10px 0;
+    }
+
+    .actions a,
+    .actions button {
+      margin-right: 6px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: white;
+    }
+
+    .badge.pending {
+      background-color: orange;
+    }
+
+    .badge.accepted {
+      background-color: green;
+    }
+
+    .badge.rejected {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+
+<h1><%= title %></h1>
+
+<!-- Messages -->
+<% if (query && query.success) { %>
+  <div class="success"><%= query.success %></div>
+<% } %>
+
+<% if (query && query.error) { %>
+  <div class="error"><%= query.error %></div>
+<% } %>
+
+<a href="/applications/add">➕ Nouvelle candidature</a>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Candidat</th>
+      <th>Email</th>
+      <th>Offre</th>
+      <th>Date</th>
+      <th>CV</th>
+      <th>Lettre</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% if (applications.length === 0) { %>
+      <tr>
+        <td colspan="8">Aucune candidature enregistrée</td>
+      </tr>
+    <% } %>
+
+    <% applications.forEach(app => { %>
+      <tr>
+        <td><%= app.application_id %></td>
+
+        <td>
+          <%= app.User ? app.User.first_name : "-" %>
+        </td>
+
+        <td>
+          <%= app.User ? app.User.email : "-" %>
+        </td>
+
+        <td>
+          <%= app.Job ? app.Job.title : "-" %>
+        </td>
+
+        <td>
+          <%= app.applied_at ? app.applied_at.toISOString().split("T")[0] : "-" %>
+        </td>
+
+        <td>
+          <% if (app.resume) { %>
+            <a href="/uploads/applications/<%= app.resume %>" target="_blank">📄 CV</a>
+          <% } else { %>
+            -
+          <% } %>
+        </td>
+
+        <td>
+          <% if (app.cover_letter) { %>
+            <a href="/uploads/applications/<%= app.cover_letter %>" target="_blank">✉️ Lettre</a>
+          <% } else { %>
+            -
+          <% } %>
+        </td>
+
+        <td class="actions">
+          <a href="/applications/edit/<%= app.application_id %>">✏️</a>
+
+          <form
+            action="/applications/delete/<%= app.application_id %>"
+            method="POST"
+            style="display:inline"
+            onsubmit="return confirm('Supprimer cette candidature ?')"
+          >
+            <button type="submit">🗑</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+</body>
+</html>
+
+
+<%- include("../partials/footer") %>

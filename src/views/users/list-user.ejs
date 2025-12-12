@@ -1,0 +1,79 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th { background: #f5f5f5; }
+    .success { color: green; margin: 10px 0; }
+    .error { color: red; margin: 10px 0; }
+    a, button { margin-right: 6px; }
+  </style>
+</head>
+<body>
+
+  <h1><%= title %></h1>
+
+  <!-- Messages -->
+  <% if (query && query.success) { %>
+    <div class="success"><%= query.success %></div>
+  <% } %>
+  <% if (query && query.error) { %>
+    <div class="error"><%= query.error %></div>
+  <% } %>
+
+  <a href="/users/add">➕ Ajouter un utilisateur</a>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Company</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (users.length === 0) { %>
+        <tr><td colspan="6">Aucun utilisateur</td></tr>
+      <% } %>
+
+      <% users.forEach(user => { %>
+        <tr>
+          <td><%= user.user_id %></td>
+          <td><%= user.first_name %></td>
+          <td><%= user.email %></td>
+          <td><%= user.status %></td>
+          <td><%= user.id_company ?? "-" %></td>
+          <td>
+            <a href="/users/edit/<%= user.user_id %>">✏️ Modifier</a>
+            <form action="/users/delete/<%= user.user_id %>" method="POST" style="display:inline;">
+              <button type="submit" onclick="return confirm('Supprimer ?')">🗑 Supprimer</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>

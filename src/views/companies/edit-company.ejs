@@ -1,0 +1,27 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+</head>
+<body>
+
+<h1><%= title %></h1>
+
+<form action="/companies/update/<%= company.company_id %>" method="POST">
+  <label>Nom</label>
+  <input type="text" name="name" value="<%= company.name %>" required>
+
+  <br><br>
+  <button type="submit">Enregistrer</button>
+</form>
+
+<a href="/companies/list">⬅️ Retour</a>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>

@@ -1,56 +1,70 @@
 import express from "express";
 import cors from "cors";
 import methodOverride from "method-override";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import { syncDatabase } from "./src/models/index.model.js";
 
-// ROUTES API (JSON)
+// ROUTES
 import { indexRouter } from "./src/routes/index.routes.js";
-
-// ROUTES VIEWS (EJS)
 import categoryRoute from "./src/routes/category.routes.js";
 import jobRoute from "./src/routes/job.routes.js";
 import jobCategoryRoute from "./src/routes/jobCategory.routes.js";
+import userRoute from "./src/routes/user.routes.js";
+import companyRoute from "./src/routes/company.routes.js";
+import applicationRoute from "./src/routes/application.routes.js";
 
 // -----------------------------------------------------
-// 1. CRÉATION APP
+// 1. __dirname pour ES MODULES
+// -----------------------------------------------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// -----------------------------------------------------
+// 2. CRÉATION APP (OBLIGATOIRE AVANT app.use)
 // -----------------------------------------------------
 const app = express();
 
 // -----------------------------------------------------
-// 2. MIDDLEWARES GLOBAUX
+// 3. MIDDLEWARES GLOBAUX
 // -----------------------------------------------------
 app.use(cors());
-app.use(express.urlencoded({ extended: true })); // important pour recevoir les forms EJS
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(methodOverride("_method"));
 
+// 🔥 RENDRE UPLOADS ACCESSIBLE (ICI ET PAS AILLEURS)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // -----------------------------------------------------
-// 3. VIEW ENGINE (EJS) POUR LE FRONT
+// 4. VIEW ENGINE
 // -----------------------------------------------------
 app.set("view engine", "ejs");
 app.set("views", "./src/views");
 
 // -----------------------------------------------------
-// 4. ROUTES EJS (le front HTML)
+// 5. ROUTES VUES
 // -----------------------------------------------------
-app.use("/categories", categoryRoute);      // ex: /categories/add-category-form
-app.use("/jobs", jobRoute);                // ex: /jobs/add-job-form
+app.use("/categories", categoryRoute);
+app.use("/jobs", jobRoute);
 app.use("/job-categories", jobCategoryRoute);
+app.use("/users", userRoute);
+app.use("/companies", companyRoute);
+app.use("/applications", applicationRoute);
 
 // -----------------------------------------------------
-// 5. ROUTES API (JSON)
+// 6. ROUTES API
 // -----------------------------------------------------
 app.use("/api", indexRouter);
 
 // -----------------------------------------------------
-// 6. SYNC DATABASE
+// 7. DATABASE
 // -----------------------------------------------------
 syncDatabase();
 
 // -----------------------------------------------------
-// 7. START SERVER
+// 8. START SERVER
 // -----------------------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

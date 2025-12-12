@@ -1,20 +1,16 @@
 import { Router } from "express";
 import { CompanyController } from "../controllers/company.controller.js";
 
-import {
-    companyValidatorCreate,
-    companyValidatorUpdate,
-    companyValidatorDelete
-} from "../validations/company.validator.js";
-
-import { validate } from "../middleware/validator.js";
-
 const router = Router();
 
-router.post("/", companyValidatorCreate, validate, CompanyController.create);
-router.get("/", CompanyController.findAll);
-router.get("/:id", CompanyController.findOne);
-router.put("/:id", companyValidatorUpdate, validate, CompanyController.update);
-router.delete("/:id", companyValidatorDelete, validate, CompanyController.delete);
+// VUES
+router.get("/list", CompanyController.renderCompanyList);
+router.get("/add", CompanyController.renderAddForm);
+router.get("/edit/:company_id", CompanyController.renderEditForm);
+
+// ACTIONS
+router.post("/", CompanyController.create);
+router.post("/update/:company_id", CompanyController.update);
+router.post("/delete/:company_id", CompanyController.delete);
 
 export default router;

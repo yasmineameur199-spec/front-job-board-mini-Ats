@@ -1,0 +1,30 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<form action="/users" method="POST">
+
+  <label>Prénom</label><br>
+  <input type="text" name="first_name" required><br><br>
+
+  <label>Email</label><br>
+  <input type="email" name="email" required><br><br>
+
+  <label>Mot de passe</label><br>
+  <input type="password" name="password" required><br><br>
+
+  <label>Status</label><br>
+  <select name="status">
+    <option value="CANDIDATE">Candidat</option>
+    <option value="RECRUITER">Recruteur</option>
+    <option value="ADMIN">Admin</option>
+  </select><br><br>
+
+  <label>ID Company</label><br>
+  <input type="number" name="company_id"><br><br>
+
+  <button type="submit">Créer</button>
+</form>
+
+<%- include("../partials/footer") %>

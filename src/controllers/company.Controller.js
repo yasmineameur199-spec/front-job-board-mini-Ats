@@ -1,94 +1,109 @@
 import Company from "../models/company.model.js";
-import User from "../models/user.model.js";
-import Job from "../models/job.model.js";
-
-import { getPaginationParams } from "../utils/pagination.js";
 
 export const CompanyController = {
 
-  // CREATE
-  async create(req, res) {
+  // =======================
+  // LISTE (VUE)
+  // =======================
+  async renderCompanyList(req, res) {
     try {
-      const company = await Company.create(req.body);
-      res.json(company);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
-    }
-  },
-
-  // READ ALL (pagination + variables de query)
-  async findAll(req, res) {
-    try {
-      const { page, limit, offset } = getPaginationParams(req, 10, 50);
-
-      const where = {};
-
-      if (req.query.name) where.company_name = req.query.name;
-      if (req.query.city) where.city = req.query.city;
-
-      const { rows, count } = await Company.findAndCountAll({
-        where,
-        include: [User, Job],
-        limit,
-        offset,
-
-        // 🔥 CORRECTION ICI :
+      const companies = await Company.findAll({
         order: [["company_id", "DESC"]],
       });
 
-      return res.json({
-        data: rows,
-        pagination: {
-          total: count,
-          page,
-          limit,
-          pageCount: Math.ceil(count / limit),
-        },
+      res.render("companies/list-company", {
+        title: "Liste des entreprises",
+        companies,
+        query: req.query
       });
-
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).send(err.message);
     }
   },
 
-  // READ ONE
-  async findOne(req, res) {
+  // =======================
+  // FORM AJOUT (VUE)
+  // =======================
+  renderAddForm(req, res) {
+    res.render("companies/add-company", {
+      title: "Ajouter une entreprise",
+      query: req.query
+    });
+  },
+
+  // =======================
+  // FORM EDIT (VUE)
+  // =======================
+  async renderEditForm(req, res) {
     try {
-      const company = await Company.findByPk(req.params.id, {
-        include: [User, Job]
+      const company = await Company.findByPk(req.params.company_id);
+
+      if (!company) {
+        return res.status(404).send("Entreprise introuvable");
+      }
+
+      res.render("companies/edit-company", {
+        title: "Modifier l’entreprise",
+        company
       });
-
-      if (!company)
-        return res.status(404).json({ error: "Company not found" });
-
-      res.json(company);
-
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).send(err.message);
     }
   },
 
+  // =======================
+  // CREATE
+  // =======================
+  async create(req, res) {
+    try {
+      await Company.create(req.body);
+      return res.redirect("/companies/list?success=Entreprise ajoutée");
+    } catch (err) {
+      return res.redirect(
+        "/companies/add?error=" + encodeURIComponent(err.message)
+      );
+    }
+  },
+
+  // =======================
   // UPDATE
+  // =======================
   async update(req, res) {
     try {
-      await Company.update(req.body, {
-        where: { company_id: req.params.id }   // 🔥 correction ici aussi
+      const [updated] = await Company.update(req.body, {
+        where: { company_id: req.params.company_id }
       });
-      res.json({ message: "Company updated" });
+
+      if (!updated) {
+        return res.redirect("/companies/list?error=Entreprise introuvable");
+      }
+
+      return res.redirect("/companies/list?success=Entreprise modifiée");
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      return res.redirect(
+        "/companies/list?error=" + encodeURIComponent(err.message)
+      );
     }
   },
 
+  // =======================
   // DELETE
+  // =======================
   async delete(req, res) {
     try {
-      await Company.destroy({
-        where: { company_id: req.params.id }   // 🔥 correction ici aussi
+      const deleted = await Company.destroy({
+        where: { company_id: req.params.company_id }
       });
-      res.json({ message: "Company deleted" });
+
+      if (!deleted) {
+        return res.redirect("/companies/list?error=Entreprise introuvable");
+      }
+
+      return res.redirect("/companies/list?success=Entreprise supprimée");
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      return res.redirect(
+        "/companies/list?error=" + encodeURIComponent(err.message)
+      );
     }
   }
 };
