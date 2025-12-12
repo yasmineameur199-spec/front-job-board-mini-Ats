@@ -1,0 +1,24 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<form action="/user-roles/<%= user_id %>/<%= oldUserRole.id_role %>?_method=PUT" method="POST" style="margin-top:20px;">
+
+  <p>Modification du rôle pour l'utilisateur ID : <strong><%= user_id %></strong></p>
+
+  <label>Nouveau Rôle :</label><br>
+  <select name="id_role" required>
+    <% roles.forEach(r => { %>
+      <option value="<%= r.role_id %>" 
+        <%= r.role_id === oldUserRole.id_role ? "selected" : "" %>>
+        <%= r.role_name %>
+      </option>
+    <% }) %>
+  </select>
+  <br><br>
+
+  <button type="submit">Mettre à jour</button>
+</form>
+
+<%- include("../partials/footer") %>

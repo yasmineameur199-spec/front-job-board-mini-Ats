@@ -2,20 +2,21 @@ import { DataTypes } from "sequelize";
 import { dataBase } from "../database.js";
 
 const Role = dataBase.define(
-  "roles",                                    // nom du modèle
+  "role",                                     // Correction : singulier
   {
-    role_id: {                                // PK utilisée dans ton controller
+    role_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {                                   // ex: 'ADMIN', 'RECRUITER', 'CANDIDATE'
+    // Correction Importante : Le modèle physique indique 'role_name' et non 'name'
+    role_name: {                              
       type: DataTypes.STRING(50),
       allowNull: false,
     },
   },
   {
-    tableName: "roles",
+    tableName: "role",                        // Correction : singulier
     timestamps: false,
   }
 );

@@ -2,22 +2,22 @@ import { DataTypes } from "sequelize";
 import { dataBase } from "../database.js";
 
 const UserRole = dataBase.define(
-  "userRoles",                          // nom du modèle
+  "userRole",                           // Correction : singulier
   {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,                 // fait partie de la PK
+      primaryKey: true,
     },
     id_role: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,                 // composite PK (user_id + id_role)
+      primaryKey: true,
     },
   },
   {
-    tableName: "userRoles",             // nom de la table en base
-    timestamps: false,                  // pas besoin de createdAt/updatedAt
+    tableName: "userRole",              // Correction : singulier
+    timestamps: false,
   }
 );
 

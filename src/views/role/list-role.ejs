@@ -1,0 +1,37 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<a href="/roles/add">+ Ajouter un rôle</a>
+
+<table border="1" cellpadding="8" cellspacing="0" style="margin-top:20px; width: 100%;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nom du Rôle</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% roles.forEach(role => { %>
+      <tr>
+        <td><%= role.role_id %></td>
+        <td><%= role.role_name %></td>
+
+        <td>
+          <a href="/roles/edit/<%= role.role_id %>">Modifier</a>
+
+          <form action="/roles/<%= role.role_id %>?_method=DELETE"
+                method="POST"
+                style="display:inline; margin-left: 10px;">
+            <button type="submit" onclick="return confirm('Voulez-vous vraiment supprimer ce rôle ?');">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include("../partials/footer") %>
