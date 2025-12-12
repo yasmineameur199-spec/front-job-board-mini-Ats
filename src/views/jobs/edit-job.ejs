@@ -3,21 +3,56 @@
 
 <h1>Modifier un job</h1>
 
-<form action="/jobs/edit-job/<%= job.job_id %>" method="POST">
+<form action="/jobs/<%= job.job_id %>?_method=PUT" method="POST">
 
-  <label>Titre :</label><br>
-  <input type="text" name="titre" value="<%= job.titre %>"><br><br>
+  <p>
+    <label for="titre">Titre :</label><br>
+    <input type="text" id="titre" name="titre" value="<%= job.titre %>" required>
+  </p>
 
-  <label>Lieu :</label><br>
-  <input type="text" name="location" value="<%= job.location %>"><br><br>
+  <p>
+    <label for="location">Lieu :</label><br>
+    <input type="text" id="location" name="location" value="<%= job.location %>" required>
+  </p>
 
-  <label>Type d'emploi :</label><br>
-  <input type="text" name="employment_type" value="<%= job.employment_type %>"><br><br>
+  <p>
+    <label for="employment_type">Type d'emploi :</label><br>
+    <select id="employment_type" name="employment_type" required>
+      <option value="">-- Choisir --</option>
+      <option value="full-time" <%= job.employment_type === "full-time" ? "selected" : "" %>>Temps plein</option>
+      <option value="part-time" <%= job.employment_type === "part-time" ? "selected" : "" %>>Temps partiel</option>
+      <option value="contract" <%= job.employment_type === "contract" ? "selected" : "" %>>Contractuel</option>
+    </select>
+  </p>
 
-  <label>Actif :</label><br>
-  <input type="checkbox" name="is_active" <%= job.is_active ? "checked" : "" %>><br><br>
+  <p>
+    <label for="description">Description :</label><br>
+    <textarea id="description" name="description" required><%= job.description %></textarea>
+  </p>
 
-  <button type="submit">Mettre à jour</button>
+  <p>
+    <label for="is_active">Job actif ?</label><br>
+    <select id="is_active" name="is_active" required>
+      <option value="">-- Choisir --</option>
+      <option value="true" <%= job.is_active ? "selected" : "" %>>Actif</option>
+      <option value="false" <%= !job.is_active ? "selected" : "" %>>Inactif</option>
+    </select>
+  </p>
+
+  <p>
+    <label for="posted_at">Date de publication :</label><br>
+    <input type="date" id="posted_at" name="posted_at" value="<%= job.posted_at.toISOString().slice(0,10) %>" required>
+  </p>
+
+  <p>
+    <label for="id_company">ID de la compagnie :</label><br>
+    <input type="number" id="id_company" name="id_company" value="<%= job.id_company %>" required>
+  </p>
+
+  <p>
+    <button type="submit">Mettre à jour</button>
+  </p>
+
 </form>
 
 <%- include("../partials/footer") %>

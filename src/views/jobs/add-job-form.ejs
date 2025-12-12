@@ -12,28 +12,46 @@
 
   <p>
     <label>Lieu :</label><br>
-    <input type="text" name="location">
+    <input type="text" name="location" required>
   </p>
 
   <p>
     <label>Type d'emploi :</label><br>
-    <input type="text" name="employment_type">
-  </p>
-
-  <p>
-    <label>Actif :</label><br>
-    <select name="is_active">
-      <option value="1">Oui</option>
-      <option value="0">Non</option>
+    <select name="employment_type" required>
+      <option value="">-- Choisir --</option>
+      <option value="full-time">Temps plein</option>
+      <option value="part-time">Temps partiel</option>
+      <option value="contract">Contractuel</option>
     </select>
   </p>
 
   <p>
-    <label>ID Company :</label><br>
-    <input type="number" name="id_company">
+    <label>Description :</label><br>
+    <textarea name="description" required></textarea>
   </p>
 
-  <button type="submit">Enregistrer</button>
+  <p>
+    <label>Job actif ?</label><br>
+    <select name="is_active" required>
+      <option value="">-- Choisir --</option>
+      <option value="true">Actif</option>
+      <option value="false">Inactif</option>
+    </select>
+  </p>
+
+  <p>
+    <label>Date de publication :</label><br>
+    <input type="date" name="posted_at" required>
+  </p>
+
+  <p>
+    <label>ID de la compagnie :</label><br>
+    <input type="number" name="id_company" required>
+  </p>
+
+  <p>
+    <button type="submit">Créer le job</button>
+  </p>
 
 </form>
 
