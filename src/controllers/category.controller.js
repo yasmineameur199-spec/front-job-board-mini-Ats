@@ -85,7 +85,7 @@ export const CategoryController = {
     }
   },
 
-  // API LIST
+  // API JSON LIST
   async findAll(req, res) {
     try {
       const { page, limit, offset } = getPaginationParams(req, 10, 100);

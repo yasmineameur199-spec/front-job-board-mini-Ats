@@ -13,7 +13,7 @@ router.post("/", CategoryController.create);
 router.post("/update/:category_id", CategoryController.update);
 router.post("/delete/:category_id", CategoryController.delete);
 
-// API
+// API JSON
 router.get("/", CategoryController.findAll);
 router.get("/:category_id", CategoryController.findOne);
 
