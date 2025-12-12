@@ -1,0 +1,29 @@
+{
+  "name": "job-board-mini-ats",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend project featuring a Job Board with a minimal ATS.",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1",
+    "method-override": "^3.0.0",
+    "mysql2": "^3.15.3",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

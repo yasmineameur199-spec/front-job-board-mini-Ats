@@ -1,0 +1,37 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<a href="/categories/add">+ Ajouter une catégorie</a>
+
+<table border="1" cellpadding="8" cellspacing="0" style="margin-top:20px;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nom</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% categories.forEach(category => { %>
+      <tr>
+        <td><%= category.category_id %></td>
+        <td><%= category.name_category %></td>
+
+        <td>
+          <a href="/categories/edit/<%= category.category_id %>">Modifier</a>
+
+          <form action="/categories/delete/<%= category.category_id %>"
+                method="POST"
+                style="display:inline;">
+            <button type="submit">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include("../partials/footer") %>

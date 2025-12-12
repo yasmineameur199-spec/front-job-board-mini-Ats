@@ -1,0 +1,23 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<form action="/job-categories" method="POST">
+  
+  <input type="hidden" name="job_id" value="<%= job_id %>">
+
+  <label>Catégorie :</label>
+  <select name="id_category" required>
+    <option value="">-- Choisir une catégorie --</option>
+    <% categories.forEach(c => { %>
+      <option value="<%= c.category_id %>">
+        <%= c.name_category %>
+      </option>
+    <% }) %>
+  </select>
+
+  <button type="submit">Ajouter</button>
+</form>
+
+<%- include("../partials/footer") %>

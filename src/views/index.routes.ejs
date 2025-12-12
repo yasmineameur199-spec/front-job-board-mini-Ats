@@ -1,0 +1,12 @@
+import categoryRoute from "./category.routes.js";
+import jobRoute from "./job.routes.js";
+import jobCategoryRoute from "./jobCategory.routes.js";
+import { Router } from "express";
+
+const router = Router();
+
+router.use("/categories", categoryRoute);
+router.use("/jobs", jobRoute);
+router.use("/job-categories", jobCategoryRoute);
+
+export { router as indexRouter };

@@ -1,0 +1,21 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<form action="/job-categories/<%= job_id %>/<%= oldCategory.id_category %>?_method=PUT" method="POST">
+
+  <label>Nouvelle catégorie :</label>
+  <select name="id_category" required>
+    <% categories.forEach(c => { %>
+      <option value="<%= c.category_id %>"
+        <%= c.category_id === oldCategory.id_category ? "selected" : "" %>>
+        <%= c.name_category %>
+      </option>
+    <% }) %>
+  </select>
+
+  <button type="submit">Modifier</button>
+</form>
+
+<%- include("../partials/footer") %>

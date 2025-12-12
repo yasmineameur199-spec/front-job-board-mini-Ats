@@ -1,0 +1,31 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Job ID</th>
+    <th>Catégorie ID</th>
+    <th>Actions</th>
+  </tr>
+
+  <% jobCategories.forEach(item => { %>
+    <tr>
+      <td><%= item.job_id %></td>
+      <td><%= item.id_category %></td>
+
+      <td>
+        <a href="/job-categories/edit/<%= item.job_id %>/<%= item.id_category %>">
+          Modifier
+        </a>
+
+        <form action="/job-categories/<%= item.job_id %>/<%= item.id_category %>?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit">Supprimer</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+</table>
+
+<%- include("../partials/footer") %>

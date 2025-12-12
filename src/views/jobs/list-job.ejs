@@ -1,0 +1,36 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1>Liste des jobs</h1>
+
+<a href="/jobs/add-job-form">+ Ajouter un job</a>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Titre</th>
+      <th>Lieu</th>
+      <th>Type</th>
+      <th>Actif</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% jobs.forEach(job => { %>
+      <tr>
+        <td><%= job.job_id %></td>
+        <td><%= job.titre %></td>
+        <td><%= job.location %></td>
+        <td><%= job.employment_type %></td>
+        <td><%= job.is_active ? "Oui" : "Non" %></td>
+        <td>
+          <a href="/jobs/edit-job-form/<%= job.job_id %>">Modifier</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include("../partials/footer") %>

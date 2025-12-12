@@ -1,0 +1,40 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1>Ajouter un job</h1>
+
+<form action="/jobs" method="POST">
+
+  <p>
+    <label>Titre :</label><br>
+    <input type="text" name="titre" required>
+  </p>
+
+  <p>
+    <label>Lieu :</label><br>
+    <input type="text" name="location">
+  </p>
+
+  <p>
+    <label>Type d'emploi :</label><br>
+    <input type="text" name="employment_type">
+  </p>
+
+  <p>
+    <label>Actif :</label><br>
+    <select name="is_active">
+      <option value="1">Oui</option>
+      <option value="0">Non</option>
+    </select>
+  </p>
+
+  <p>
+    <label>ID Company :</label><br>
+    <input type="number" name="id_company">
+  </p>
+
+  <button type="submit">Enregistrer</button>
+
+</form>
+
+<%- include("../partials/footer") %>

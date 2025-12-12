@@ -1,0 +1,23 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1>Modifier un job</h1>
+
+<form action="/jobs/edit-job/<%= job.job_id %>" method="POST">
+
+  <label>Titre :</label><br>
+  <input type="text" name="titre" value="<%= job.titre %>"><br><br>
+
+  <label>Lieu :</label><br>
+  <input type="text" name="location" value="<%= job.location %>"><br><br>
+
+  <label>Type d'emploi :</label><br>
+  <input type="text" name="employment_type" value="<%= job.employment_type %>"><br><br>
+
+  <label>Actif :</label><br>
+  <input type="checkbox" name="is_active" <%= job.is_active ? "checked" : "" %>><br><br>
+
+  <button type="submit">Mettre à jour</button>
+</form>
+
+<%- include("../partials/footer") %>
