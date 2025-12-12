@@ -1,69 +1,60 @@
 import Role from "../models/role.model.js";
-import { getPaginationParams } from "../utils/pagination.js";
 
 export const RoleController = {
 
-  // CREATE
-  async create(req, res) {
+  // --- RENDER METHODS (Pour EJS) ---
+
+  // Affiche la liste des rôles
+  async renderList(req, res) {
     try {
-      const role = await Role.create(req.body);
-      return res.status(201).json(role);
+      const roles = await Role.findAll({
+        order: [["role_id", "DESC"]] // Trié par ID décroissant
+      });
+      res.render("role/list-role", { // Attention au nom du dossier 'role' (singulier ou pluriel selon votre dossier views)
+        title: "Gestion des Rôles",
+        roles
+      });
     } catch (err) {
-      return res.status(400).json({ error: err.message });
+      res.status(500).send(err.message);
     }
   },
 
-  // FIND ALL (pagination + filtres)
-  async findAll(req, res) {
-    try {
-      const { page, limit, offset } = getPaginationParams(req, 10, 50);
-
-      const where = {};
-
-      // /api/roles?name=Admin
-      if (req.query.name) {
-        where.name = req.query.name;
-      }
-
-      const { rows, count } = await Role.findAndCountAll({
-        where,
-        limit,
-        offset,
-        order: [["role_id", "DESC"]],
-      });
-
-      return res.json({
-        data: rows,
-        pagination: {
-          total: count,
-          page,
-          limit,
-          pageCount: Math.ceil(count / limit),
-        },
-      });
-
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
+  // Affiche le formulaire d'ajout
+  renderAddForm(req, res) {
+    res.render("role/add-role", {
+      title: "Créer un nouveau rôle"
+    });
   },
 
-  // FIND ONE
-  async findOne(req, res) {
+  // Affiche le formulaire d'édition
+  async renderEditForm(req, res) {
     try {
       const role = await Role.findByPk(req.params.role_id);
-
       if (!role) {
-        return res.status(404).json({ error: "Role not found" });
+        return res.status(404).send("Rôle introuvable");
       }
-
-      return res.json(role);
-
+      res.render("role/edit-role", {
+        title: "Modifier le rôle",
+        role
+      });
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      res.status(500).send(err.message);
     }
   },
 
-  // UPDATE
+  // --- ACTION METHODS (Redirections) ---
+
+  // Créer un rôle (POST)
+  async create(req, res) {
+    try {
+      await Role.create(req.body);
+      return res.redirect("/roles"); // Redirection vers la liste
+    } catch (err) {
+      return res.status(400).send(err.message);
+    }
+  },
+
+  // Mettre à jour un rôle (PUT)
   async update(req, res) {
     try {
       const [updated] = await Role.update(req.body, {
@@ -71,32 +62,30 @@ export const RoleController = {
       });
 
       if (updated === 0) {
-        return res.status(404).json({ error: "Role not found" });
+        return res.status(404).send("Rôle introuvable");
       }
 
-      const role = await Role.findByPk(req.params.role_id);
-      return res.json(role);
-
+      return res.redirect("/roles");
     } catch (err) {
-      return res.status(400).json({ error: err.message });
+      return res.status(400).send(err.message);
     }
   },
 
-  // DELETE
+  // Supprimer un rôle (DELETE)
   async delete(req, res) {
     try {
-      const deleted = await Role.destroy({
+      await Role.destroy({
         where: { role_id: req.params.role_id }
       });
-
-      if (deleted === 0) {
-        return res.status(404).json({ error: "Role not found" });
-      }
-
-      return res.json({ message: "Role deleted" });
-
+      return res.redirect("/roles");
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).send(err.message);
     }
+  },
+
+  // --- API JSON (Optionnel, si besoin pour le futur) ---
+  async findAllJson(req, res) {
+    const roles = await Role.findAll();
+    res.json(roles);
   }
 };
