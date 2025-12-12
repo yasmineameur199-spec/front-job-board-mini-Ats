@@ -1,0 +1,14 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<form action="/roles" method="POST" style="margin-top:20px;">
+
+  <label>Nom du rôle :</label><br>
+  <input type="text" name="role_name" required placeholder="Ex: Recruteur, Candidat"><br><br>
+
+  <button type="submit">Créer</button>
+</form>
+
+<%- include("../partials/footer") %>
