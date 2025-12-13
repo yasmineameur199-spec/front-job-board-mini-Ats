@@ -1,0 +1,36 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <style>
+    body { font-family: Arial; }
+    label { display: block; margin-top: 10px; }
+    input, button { padding: 6px; width: 300px; }
+  </style>
+</head>
+<body>
+
+<h1><%= title %></h1>
+
+<% if (query && query.error) { %>
+  <p style="color:red"><%= query.error %></p>
+<% } %>
+
+<form action="/companies" method="POST">
+  <label>Nom de l’entreprise</label>
+  <input type="text" name="name" required>
+
+  <br><br>
+  <button type="submit">Créer</button>
+</form>
+
+<a href="/companies/list">⬅️ Retour</a>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>

@@ -1,0 +1,140 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input[type="file"] {
+      padding: 4px;
+    }
+
+    .actions {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 15px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1><%= title %></h1>
+
+  <!-- Message erreur -->
+  <% if (query && query.error) { %>
+    <div class="error"><%= query.error %></div>
+  <% } %>
+
+  <form action="/applications" method="POST" enctype="multipart/form-data">
+
+    <!-- CANDIDAT -->
+    <label>Candidat</label>
+    <select name="user_id" required>
+      <option value="">-- Sélectionner un candidat --</option>
+      <% users.forEach(u => { %>
+        <option value="<%= u.user_id %>">
+          <%= u.first_name %> — <%= u.email %>
+        </option>
+      <% }) %>
+    </select>
+
+    <!-- JOB -->
+    <label>Offre d’emploi</label>
+    <select name="id_job" required>
+      <option value="">-- Sélectionner une offre --</option>
+      <% jobs.forEach(j => { %>
+        <option value="<%= j.job_id %>">
+          <%= j.title %>
+        </option>
+      <% }) %>
+    </select>
+
+    <!-- CV -->
+    <label>CV (PDF ou Word)</label>
+    <input type="file" name="resume" required>
+    <div class="hint">Formats acceptés : PDF, DOC, DOCX</div>
+
+    <!-- LETTRE -->
+    <label>Lettre de motivation</label>
+    <input type="file" name="cover_letter" required>
+    <div class="hint">Formats acceptés : PDF, DOC, DOCX</div>
+
+    <!-- DATE -->
+    <label>Date de candidature</label>
+    <input type="date" name="applied_at">
+
+    <div class="actions">
+      <a href="/applications/list">⬅️ Retour</a>
+      <button type="submit">📨 Postuler</button>
+    </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>

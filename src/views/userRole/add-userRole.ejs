@@ -1,0 +1,33 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<h1><%= title %></h1>
+
+<form action="/user-roles" method="POST" style="margin-top:20px;">
+
+  <label>Utilisateur :</label><br>
+  <select name="user_id" required>
+    <option value="">-- Choisir un utilisateur --</option>
+    <% users.forEach(user => { %>
+      <option value="<%= user.user_id %>">
+        <%= user.first_name %> <%= user.last_name %> (ID: <%= user.user_id %>)
+      </option>
+    <% }) %>
+  </select>
+  <br><br>
+
+  <label>Rôle à assigner :</label><br>
+  <select name="id_role" required>
+    <option value="">-- Choisir un rôle --</option>
+    <% roles.forEach(role => { %>
+      <option value="<%= role.role_id %>">
+        <%= role.role_name %>
+      </option>
+    <% }) %>
+  </select>
+  <br><br>
+
+  <button type="submit">Assigner</button>
+</form>
+
+<%- include("../partials/footer") %>

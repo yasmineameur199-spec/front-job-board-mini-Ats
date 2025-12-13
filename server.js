@@ -1,58 +1,70 @@
+// server.js
 import express from "express";
-import cors from "cors";
-import methodOverride from "method-override";
+import session from "express-session";
+import flash from "connect-flash";
+import expressLayouts from "express-ejs-layouts";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import { syncDatabase } from "./src/models/index.model.js";
+import authRoutes from "./src/routes/auth.routes.js";
+import homeRoutes from "./src/routes/home.routes.js";
+import jobsRoutes from "./src/routes/jobs.routes.js";
+import recruiterRoutes from "./src/routes/recruiter.routes.js";
+import applicationsRoutes from "./src/routes/applications.routes.js";
 
-// ROUTES API (JSON)
-import { indexRouter } from "./src/routes/index.routes.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// ROUTES VIEWS (EJS)
-import categoryRoute from "./src/routes/category.routes.js";
-import jobRoute from "./src/routes/job.routes.js";
-import jobCategoryRoute from "./src/routes/jobCategory.routes.js";
-
-// -----------------------------------------------------
-// 1. CRÉATION APP
-// -----------------------------------------------------
 const app = express();
 
-// -----------------------------------------------------
-// 2. MIDDLEWARES GLOBAUX
-// -----------------------------------------------------
-app.use(cors());
-app.use(express.urlencoded({ extended: true })); // important pour recevoir les forms EJS
-app.use(express.json());
-
-app.use(methodOverride("_method"));
-
-// -----------------------------------------------------
-// 3. VIEW ENGINE (EJS) POUR LE FRONT
-// -----------------------------------------------------
+/* ------------------ EJS + Layouts ------------------ */
 app.set("view engine", "ejs");
-app.set("views", "./src/views");
+app.set("views", path.join(__dirname, "src", "views"));
 
-// -----------------------------------------------------
-// 4. ROUTES EJS (le front HTML)
-// -----------------------------------------------------
-app.use("/categories", categoryRoute);      // ex: /categories/add-category-form
-app.use("/jobs", jobRoute);                // ex: /jobs/add-job-form
-app.use("/job-categories", jobCategoryRoute);
+//  This makes layout.ejs work with <%- body %>
+app.use(expressLayouts);
+app.set("layout", "layout"); // uses: src/views/layout.ejs
 
-// -----------------------------------------------------
-// 5. ROUTES API (JSON)
-// -----------------------------------------------------
-app.use("/api", indexRouter);
+/* ------------------ Middlewares ------------------ */
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 
-// -----------------------------------------------------
-// 6. SYNC DATABASE
-// -----------------------------------------------------
-syncDatabase();
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret-change-me",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-// -----------------------------------------------------
-// 7. START SERVER
-// -----------------------------------------------------
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+app.use(flash());
+
+// Make currentUser + flash available in all EJS views
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.user || null;
+  res.locals.flash = req.flash();
+  next();
 });
+
+/* ------------------ Routes ------------------ */
+app.use("/", authRoutes);
+app.use("/", homeRoutes);
+app.use("/jobs", jobsRoutes);
+app.use("/recruiter", recruiterRoutes);
+app.use("/applications", applicationsRoutes);
+
+
+/* ------------------ Start server ------------------ */
+const PORT = process.env.PORT || 4000;
+
+syncDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`EJS app running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("DB sync failed:", err);
+    process.exit(1);
+  });

@@ -1,3 +1,4 @@
+# Job-Board-Mini-ATS-Frontend
 # JobBoard – Plateforme d’embauche complète
 
 Une application web permettant aux utilisateurs de consulter des offres d’emploi, parcourir des catégories, s’inscrire et gérer leurs informations.

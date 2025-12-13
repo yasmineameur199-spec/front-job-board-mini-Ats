@@ -1,0 +1,39 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+</head>
+<body>
+
+<h1><%= title %></h1>
+
+<form action="/applications/update/<%= application.application_id %>" method="POST">
+
+  <label>Resume</label>
+  <textarea name="resume"><%= application.resume %></textarea>
+
+  <label>Cover Letter</label>
+  <textarea name="cover_letter"><%= application.cover_letter %></textarea>
+
+  <label>Date</label>
+  <input type="date" name="applied_at" value="<%= application.applied_at %>">
+
+  <label>ID Job</label>
+  <input type="number" name="id_job" value="<%= application.id_job %>">
+
+  <label>ID User</label>
+  <input type="number" name="user_id" value="<%= application.user_id %>">
+
+  <br><br>
+  <button type="submit">Enregistrer</button>
+</form>
+
+<a href="/applications/list">⬅️ Retour</a>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>

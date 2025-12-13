@@ -1,0 +1,54 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <style>
+    body { font-family: Arial; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+
+<h1><%= title %></h1>
+
+<% if (query && query.success) { %>
+  <p class="success"><%= query.success %></p>
+<% } %>
+<% if (query && query.error) { %>
+  <p class="error"><%= query.error %></p>
+<% } %>
+
+<a href="/companies/add">➕ Ajouter une entreprise</a>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Nom</th>
+    <th>Actions</th>
+  </tr>
+
+  <% companies.forEach(c => { %>
+    <tr>
+      <td><%= c.company_id %></td>
+      <td><%= c.name %></td>
+      <td>
+        <a href="/companies/edit/<%= c.company_id %>">✏️ Modifier</a>
+        <form action="/companies/delete/<%= c.company_id %>" method="POST" style="display:inline">
+          <button type="submit" onclick="return confirm('Supprimer ?')">🗑</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+</table>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>

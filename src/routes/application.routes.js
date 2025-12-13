@@ -1,20 +1,33 @@
 import { Router } from "express";
 import { ApplicationController } from "../controllers/application.controller.js";
-
-import {
-    applicationValidatorCreate,
-    applicationValidatorUpdate,
-    applicationValidatorDelete
-} from "../validations/application.validator.js";
-
-import { validate } from "../middleware/validator.js";
+import { uploadApplication } from "../middleware/uploadApplication.js";
 
 const router = Router();
 
-router.post("/", applicationValidatorCreate, validate, ApplicationController.create);
-router.get("/", ApplicationController.findAll);
-router.get("/:id", ApplicationController.findOne);
-router.put("/:id", applicationValidatorUpdate, validate, ApplicationController.update);
-router.delete("/:id", applicationValidatorDelete, validate, ApplicationController.delete);
+// VUES
+router.get("/list", ApplicationController.renderApplicationList);
+router.get("/add", ApplicationController.renderAddForm);
+router.get("/edit/:application_id", ApplicationController.renderEditForm);
+
+// ACTIONS (UPLOAD)
+router.post(
+  "/",
+  uploadApplication.fields([
+    { name: "resume", maxCount: 1 },
+    { name: "cover_letter", maxCount: 1 }
+  ]),
+  ApplicationController.create
+);
+
+router.post(
+  "/update/:application_id",
+  uploadApplication.fields([
+    { name: "resume", maxCount: 1 },
+    { name: "cover_letter", maxCount: 1 }
+  ]),
+  ApplicationController.update
+);
+
+router.post("/delete/:application_id", ApplicationController.delete);
 
 export default router;

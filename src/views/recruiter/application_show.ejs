@@ -1,0 +1,60 @@
+<h1>Candidature</h1>
+
+<section style="margin-bottom: 24px;">
+  <h3>Informations candidat</h3>
+  <p><strong>Email :</strong> <%= application.user.email %></p>
+  <p><strong>Date :</strong> <%= new Date(application.applied_at).toLocaleDateString() %></p>
+</section>
+
+<section style="margin-bottom: 24px;">
+  <h3>CV</h3>
+  <pre style="white-space: pre-wrap;"><%= application.resume %></pre>
+</section>
+
+<section style="margin-bottom: 24px;">
+  <h3>Lettre de motivation</h3>
+  <pre style="white-space: pre-wrap;"><%= application.cover_letter || "—" %></pre>
+</section>
+
+<section style="margin-bottom: 24px;">
+  <h3>Étape actuelle</h3>
+
+  <form method="POST" action="/recruiter/applications/<%= application.application_id %>/stage">
+    <select name="stage_id" required>
+      <% stages.forEach(stage => { %>
+        <option
+          value="<%= stage.stage_id %>"
+          <%= stage.stage_id === currentStageId ? "selected" : "" %>
+        >
+          <%= stage.name_stage %>
+        </option>
+      <% }) %>
+    </select>
+
+    <button type="submit" style="margin-left: 12px;">
+      Mettre à jour
+    </button>
+  </form>
+</section>
+
+<section>
+  <h3>Commentaires</h3>
+
+  <% if (comments.length === 0) { %>
+    <p>Aucun commentaire.</p>
+  <% } %>
+
+  <ul>
+    <% comments.forEach(c => { %>
+      <li>
+        <strong><%= c.user.email %></strong> :
+        <%= c.content %>
+      </li>
+    <% }) %>
+  </ul>
+
+  <form method="POST" action="/recruiter/applications/<%= application.application_id %>/comments" style="margin-top:16px;">
+    <textarea name="content" rows="3" required></textarea><br>
+    <button type="submit">Ajouter un commentaire</button>
+  </form>
+</section>

@@ -1,0 +1,44 @@
+<div class="role-tag">
+  <span><%= role.role_name %></span>
+
+  <form 
+    action="/user-roles/<%= user.user_id %>/<%= role.role_id %>" 
+    method="POST"
+    onsubmit="return confirm('Retirer ce rôle à l\'utilisateur ?');"
+    style="display:inline;"
+  >
+    <input type="hidden" name="_method" value="DELETE">
+    <button class="delete-btn" type="submit">×</button>
+  </form>
+</div>
+
+<style>
+/* Style similaire à jobCategory-element mais avec une couleur distincte */
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #e2e3e5; /* Gris/Bleuté pour les rôles */
+  color: #383d41;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 2px;
+  font-size: 0.9em;
+  border: 1px solid #d6d8db;
+}
+
+.delete-btn {
+  border: none;
+  background: none;
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 8px;
+  cursor: pointer;
+  color: #dc3545; /* Rouge pour l'action de suppression */
+  padding: 0;
+  line-height: 1;
+}
+
+.delete-btn:hover {
+  color: #a71d2a;
+}
+</style>

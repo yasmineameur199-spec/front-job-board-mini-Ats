@@ -1,0 +1,55 @@
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    label { display: block; margin-top: 10px; }
+    input, select, button {
+      margin-top: 5px;
+      padding: 6px;
+      width: 300px;
+    }
+    .actions { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1><%= title %></h1>
+
+  <form action="/users/update/<%= user.user_id %>" method="POST">
+
+    <label>Prénom</label>
+    <input type="text" name="first_name" value="<%= user.first_name %>" required>
+
+    <label>Email</label>
+    <input type="email" name="email" value="<%= user.email %>" required>
+
+    <label>Mot de passe</label>
+    <input type="password" name="password" placeholder="Laisser vide pour ne pas changer">
+
+    <label>Status</label>
+    <select name="status">
+      <option value="CANDIDATE" <%= user.status === "CANDIDATE" ? "selected" : "" %>>Candidat</option>
+      <option value="RECRUITER" <%= user.status === "RECRUITER" ? "selected" : "" %>>Recruteur</option>
+      <option value="ADMIN" <%= user.status === "ADMIN" ? "selected" : "" %>>Admin</option>
+    </select>
+
+    <label>ID Company</label>
+    <input type="number" name="id_company" value="<%= user.id_company ?? "" %>">
+
+    <div class="actions">
+      <button type="submit">💾 Enregistrer</button>
+      <a href="/users/list">⬅️ Retour</a>
+    </div>
+
+  </form>
+
+</body>
+</html>
+
+<%- include("../partials/footer") %>
