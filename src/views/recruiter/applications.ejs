@@ -1,0 +1,41 @@
+<h1>Candidatures — <%= job.titre %></h1>
+<p><strong>Entreprise :</strong> <%= job.company?.name || "N/A" %></p>
+
+<% if (!applications || applications.length === 0) { %>
+  <p>Aucune candidature pour le moment.</p>
+<% } else { %>
+  <table>
+    <thead>
+      <tr>
+        <th>Candidat</th>
+        <th>Date</th>
+        <th>CV</th>
+        <th>Lettre</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% applications.forEach(app => { %>
+        <tr>
+          <td><%= app.user?.email || "N/A" %></td>
+          <td><%= app.applied_at ? new Date(app.applied_at).toLocaleDateString() : "—" %></td>
+          <td>
+            <% if (app.resume) { %>
+              <a href="<%= app.resume %>" target="_blank">CV</a>
+            <% } else { %> — <% } %>
+          </td>
+          <td>
+            <% if (app.cover_letter) { %>
+              <a href="<%= app.cover_letter %>" target="_blank">Lettre</a>
+            <% } else { %> — <% } %>
+          </td>
+          <td>
+            <a href="/recruiter/applications/<%= app.application_id %>">
+              Ouvrir
+            </a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
