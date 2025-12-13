@@ -1,0 +1,10 @@
+<h1>Job Board / Mini ATS</h1>
+
+<p>Bienvenue sur la plateforme ATS.</p>
+
+<a href="/jobs">Voir les offres d’emploi</a>
+
+<% if (currentUser && currentUser.roles && currentUser.roles.includes("Recruiter")) { %>
+  <br><br>
+  <a href="/recruiter/jobs">Tableau de bord recruteur</a>
+<% } %>

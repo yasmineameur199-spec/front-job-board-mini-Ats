@@ -1,60 +1,69 @@
 import Role from "../models/role.model.js";
+import { getPaginationParams } from "../utils/pagination.js";
 
 export const RoleController = {
 
-  // --- RENDER METHODS (Pour EJS) ---
-
-  // Affiche la liste des rôles
-  async renderList(req, res) {
-    try {
-      const roles = await Role.findAll({
-        order: [["role_id", "DESC"]] // Trié par ID décroissant
-      });
-      res.render("role/list-role", { // Attention au nom du dossier 'role' (singulier ou pluriel selon votre dossier views)
-        title: "Gestion des Rôles",
-        roles
-      });
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  },
-
-  // Affiche le formulaire d'ajout
-  renderAddForm(req, res) {
-    res.render("role/add-role", {
-      title: "Créer un nouveau rôle"
-    });
-  },
-
-  // Affiche le formulaire d'édition
-  async renderEditForm(req, res) {
-    try {
-      const role = await Role.findByPk(req.params.role_id);
-      if (!role) {
-        return res.status(404).send("Rôle introuvable");
-      }
-      res.render("role/edit-role", {
-        title: "Modifier le rôle",
-        role
-      });
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  },
-
-  // --- ACTION METHODS (Redirections) ---
-
-  // Créer un rôle (POST)
+  // CREATE
   async create(req, res) {
     try {
-      await Role.create(req.body);
-      return res.redirect("/roles"); // Redirection vers la liste
+      const role = await Role.create(req.body);
+      return res.status(201).json(role);
     } catch (err) {
-      return res.status(400).send(err.message);
+      return res.status(400).json({ error: err.message });
     }
   },
 
-  // Mettre à jour un rôle (PUT)
+  // FIND ALL (pagination + filtres)
+  async findAll(req, res) {
+    try {
+      const { page, limit, offset } = getPaginationParams(req, 10, 50);
+
+      const where = {};
+
+      // /api/roles?name=Admin
+      if (req.query.name) {
+        where.name = req.query.name;
+      }
+
+      const { rows, count } = await Role.findAndCountAll({
+        where,
+        limit,
+        offset,
+        order: [["role_id", "DESC"]],
+      });
+
+      return res.json({
+        data: rows,
+        pagination: {
+          total: count,
+          page,
+          limit,
+          pageCount: Math.ceil(count / limit),
+        },
+      });
+
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
+
+  // FIND ONE
+  async findOne(req, res) {
+    try {
+      const role = await Role.findByPk(req.params.role_id);
+
+      if (!role) {
+        return res.status(404).json({ error: "Role not found" });
+      }
+
+      return res.json(role);
+
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  },
+
+  // UPDATE
   async update(req, res) {
     try {
       const [updated] = await Role.update(req.body, {
@@ -62,30 +71,32 @@ export const RoleController = {
       });
 
       if (updated === 0) {
-        return res.status(404).send("Rôle introuvable");
+        return res.status(404).json({ error: "Role not found" });
       }
 
-      return res.redirect("/roles");
+      const role = await Role.findByPk(req.params.role_id);
+      return res.json(role);
+
     } catch (err) {
-      return res.status(400).send(err.message);
+      return res.status(400).json({ error: err.message });
     }
   },
 
-  // Supprimer un rôle (DELETE)
+  // DELETE
   async delete(req, res) {
     try {
-      await Role.destroy({
+      const deleted = await Role.destroy({
         where: { role_id: req.params.role_id }
       });
-      return res.redirect("/roles");
-    } catch (err) {
-      return res.status(500).send(err.message);
-    }
-  },
 
-  // --- API JSON (Optionnel, si besoin pour le futur) ---
-  async findAllJson(req, res) {
-    const roles = await Role.findAll();
-    res.json(roles);
+      if (deleted === 0) {
+        return res.status(404).json({ error: "Role not found" });
+      }
+
+      return res.json({ message: "Role deleted" });
+
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   }
 };

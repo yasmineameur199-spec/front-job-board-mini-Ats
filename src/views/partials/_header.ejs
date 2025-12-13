@@ -1,0 +1,30 @@
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/">Mini ATS</a>
+
+    <nav class="links">
+      <a href="/jobs">Offres</a>
+
+      <% if (currentUser && currentUser.roles && currentUser.roles.includes("Recruiter")) { %>
+        <a href="/recruiter/jobs">Dashboard recruteur</a>
+      <% } %>
+
+      <% if (currentUser) { %>
+        <span class="muted"><%= currentUser.email %></span>
+        <a class="btn-sm" href="/logout">Déconnexion</a>
+      <% } else { %>
+        <a class="btn-sm" href="/login">Connexion</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav { position: sticky; top: 0; backdrop-filter: blur(10px); background: rgba(11,18,32,0.75); border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .nav-inner { max-width: 1000px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { font-weight: 700; letter-spacing: -0.02em; }
+  .links { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .muted { color: rgba(229,231,235,0.7); font-size: 0.95rem; }
+  .btn-sm { padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); font-weight: 600; }
+  .btn-sm:hover { background: rgba(255,255,255,0.10); }
+</style>

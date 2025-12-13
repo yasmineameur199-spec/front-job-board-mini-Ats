@@ -1,72 +1,70 @@
+// server.js
 import express from "express";
-import cors from "cors";
-import methodOverride from "method-override";
+import session from "express-session";
+import flash from "connect-flash";
+import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import { syncDatabase } from "./src/models/index.model.js";
+import authRoutes from "./src/routes/auth.routes.js";
+import homeRoutes from "./src/routes/home.routes.js";
+import jobsRoutes from "./src/routes/jobs.routes.js";
+import recruiterRoutes from "./src/routes/recruiter.routes.js";
+import applicationsRoutes from "./src/routes/applications.routes.js";
 
-// ROUTES
-import { indexRouter } from "./src/routes/index.routes.js";
-import categoryRoute from "./src/routes/category.routes.js";
-import jobRoute from "./src/routes/job.routes.js";
-import jobCategoryRoute from "./src/routes/jobCategory.routes.js";
-import userRoute from "./src/routes/user.routes.js";
-import companyRoute from "./src/routes/company.routes.js";
-import applicationRoute from "./src/routes/application.routes.js";
-
-// -----------------------------------------------------
-// 1. __dirname pour ES MODULES
-// -----------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// -----------------------------------------------------
-// 2. CRÉATION APP (OBLIGATOIRE AVANT app.use)
-// -----------------------------------------------------
 const app = express();
 
-// -----------------------------------------------------
-// 3. MIDDLEWARES GLOBAUX
-// -----------------------------------------------------
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(methodOverride("_method"));
-
-// 🔥 RENDRE UPLOADS ACCESSIBLE (ICI ET PAS AILLEURS)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// -----------------------------------------------------
-// 4. VIEW ENGINE
-// -----------------------------------------------------
+/* ------------------ EJS + Layouts ------------------ */
 app.set("view engine", "ejs");
-app.set("views", "./src/views");
+app.set("views", path.join(__dirname, "src", "views"));
 
-// -----------------------------------------------------
-// 5. ROUTES VUES
-// -----------------------------------------------------
-app.use("/categories", categoryRoute);
-app.use("/jobs", jobRoute);
-app.use("/job-categories", jobCategoryRoute);
-app.use("/users", userRoute);
-app.use("/companies", companyRoute);
-app.use("/applications", applicationRoute);
+//  This makes layout.ejs work with <%- body %>
+app.use(expressLayouts);
+app.set("layout", "layout"); // uses: src/views/layout.ejs
 
-// -----------------------------------------------------
-// 6. ROUTES API
-// -----------------------------------------------------
-app.use("/api", indexRouter);
+/* ------------------ Middlewares ------------------ */
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 
-// -----------------------------------------------------
-// 7. DATABASE
-// -----------------------------------------------------
-syncDatabase();
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret-change-me",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-// -----------------------------------------------------
-// 8. START SERVER
-// -----------------------------------------------------
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+app.use(flash());
+
+// Make currentUser + flash available in all EJS views
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.user || null;
+  res.locals.flash = req.flash();
+  next();
 });
+
+/* ------------------ Routes ------------------ */
+app.use("/", authRoutes);
+app.use("/", homeRoutes);
+app.use("/jobs", jobsRoutes);
+app.use("/recruiter", recruiterRoutes);
+app.use("/applications", applicationsRoutes);
+
+
+/* ------------------ Start server ------------------ */
+const PORT = process.env.PORT || 4000;
+
+syncDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`EJS app running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("DB sync failed:", err);
+    process.exit(1);
+  });

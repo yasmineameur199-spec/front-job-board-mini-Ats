@@ -1,0 +1,21 @@
+<h1>Postuler à <%= job.titre %></h1>
+
+<% if (errors && errors.length) { %>
+  <ul style="color:#ef4444;font-weight:500;">
+    <% errors.forEach(e => { %><li><%= e %></li><% }) %>
+  </ul>
+<% } %>
+
+<form action="/jobs/<%= job.job_id %>/apply" method="POST" enctype="multipart/form-data">
+  <div style="margin-bottom:16px;">
+    <label>CV (PDF)</label><br>
+    <input type="file" name="resume_pdf" accept="application/pdf" required>
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label>Lettre de motivation (PDF)</label><br>
+    <input type="file" name="cover_pdf" accept="application/pdf">
+  </div>
+
+  <button type="submit">Envoyer la candidature</button>
+</form>

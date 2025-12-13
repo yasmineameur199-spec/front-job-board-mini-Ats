@@ -84,5 +84,5 @@ export const syncDatabase = async () => {
 export {
   Company, User, Role, Job,
   Category, Application, Stage,
-  Comment
+  Comment, ApplicationStage, HasComment, UserRole
 };

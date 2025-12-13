@@ -1,132 +1,49 @@
 import User from "../models/user.model.js";
 import Company from "../models/company.model.js";
+import Role from "../models/role.model.js";
 import { getPaginationParams } from "../utils/pagination.js";
-import { query } from "express-validator";
 
 export const UserController = {
 
-  // =======================
-  // LISTE (VUE)
-  // =======================
-  async renderUserList(req, res) {
-    try {
-      const users = await User.findAll({
-        include: [Company],
-        order: [["user_id", "DESC"]],
-      });
-
-      res.render("users/list-user", {
-        title: "Liste des utilisateurs",
-        users,
-        query: req.query
-      });
-
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  },
-
-  // =======================
-  // FORMULAIRE AJOUT (VUE)
-  // =======================
-  renderAddForm(req, res) {
-    res.render("users/add-user", {
-      title: "Ajouter un utilisateur"
-    });
-  },
-
-  // =======================
-  // FORMULAIRE MODIFICATION (VUE)
-  // =======================
-  async renderEditForm(req, res) {
-    try {
-      const user = await User.findByPk(req.params.user_id, {
-        include: [Company]
-      });
-
-      if (!user) return res.status(404).send("Utilisateur introuvable");
-
-      res.render("users/edit-user", {
-        title: "Modifier un utilisateur",
-        user
-      });
-
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  },
-
-  // =======================
-  // CREATE
-  // =======================
+  // CREATE (inchangé)
   async create(req, res) {
-  try {
-    // corriger FK vide
-    if (!req.body.id_company) {
-      req.body.id_company = null;
-    }
-
-    await User.create(req.body);
-
-    // message succès
-    return res.redirect("/users/list?success=Utilisateur ajouté avec succès");
-
-  } catch (err) {
-    // message erreur
-    return res.redirect("/users/add?error=" + encodeURIComponent(err.message));
-  }
-},
-
-  // =======================
-  // UPDATE
-  // =======================
-  async update(req, res) {
     try {
-      const [updated] = await User.update(req.body, {
-        where: { user_id: req.params.user_id },
-      });
-
-      if (!updated) return res.status(404).send("Utilisateur introuvable");
-
-      return res.redirect("/users/list");
-
+      const user = await User.create(req.body);
+      res.json(user);
     } catch (err) {
-      return res.status(400).send(err.message);
+      res.status(400).json({ error: err.message });
     }
   },
 
-  // =======================
-  // DELETE
-  // =======================
-  async delete(req, res) {
-    try {
-      const deleted = await User.destroy({
-        where: { user_id: req.params.user_id },
-      });
-
-      if (!deleted) return res.status(404).json({ error: "User not found" });
-
-      return res.redirect("/users/list");
-
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
-  },
-
-  // =======================
-  // API LIST (JSON)
-  // =======================
+  // READ ALL (MODIFIÉ : pagination + variables de query)
   async findAll(req, res) {
     try {
-      const { page, limit, offset } = getPaginationParams(req, 10, 100);
+      // lire pagination depuis req.query
+      const { page, limit, offset } = getPaginationParams(req, 10, 50);
 
+      // filtres dynamiques
+      const where = {};
+
+      // /api/users?id_company=2
+      if (req.query.id_company) {
+        where.id_company = req.query.id_company;
+      }
+
+      // /api/users?email=example@mail.com
+      if (req.query.email) {
+        where.email = req.query.email;
+      }
+
+      // requête avec pagination et include
       const { rows, count } = await User.findAndCountAll({
-        include: [Company],
+        where,
+        include: [Company, Role],
         limit,
         offset,
         order: [["user_id", "DESC"]],
       });
 
+      // retour data + pagination
       return res.json({
         data: rows,
         pagination: {
@@ -142,21 +59,44 @@ export const UserController = {
     }
   },
 
-  // =======================
-  // FIND ONE (JSON)
-  // =======================
+  // READ ONE (inchangé)
   async findOne(req, res) {
     try {
-      const user = await User.findByPk(req.params.user_id, {
-        include: [Company]
+      const user = await User.findByPk(req.params.id, {
+        include: [Company, Role]
       });
 
-      if (!user) return res.status(404).json({ error: "User not found" });
+      if (!user)
+        return res.status(404).json({ error: "User not found" });
 
-      return res.json(user);
+      res.json(user);
 
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  // UPDATE (inchangé)
+  async update(req, res) {
+    try {
+      await User.update(req.body, {
+        where: { user_id: req.params.id }
+      });
+      res.json({ message: "User updated" });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  },
+
+  // DELETE (inchangé)
+  async delete(req, res) {
+    try {
+      await User.destroy({
+        where: { user_id: req.params.id }
+      });
+      res.json({ message: "User deleted" });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
   }
 };
